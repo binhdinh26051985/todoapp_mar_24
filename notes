@@ -1,0 +1,859 @@
+reference: https://www.youtube.com/watch?v=sO0D5g-F2Qg&t=1840s
+1. Create folder TODOLIST
+2. Create folder backend inside TODOLIST
+3. C:\Users\volem\Desktop\TODOLISTJS>cd backend
+install node.js:
+C:\Users\volem\Desktop\TODOLISTJS\backend>npm init -y
+4. C:\Users\volem\Desktop\TODOLISTJS\backend>npm install express
+5. C:\Users\volem\Desktop\TODOLISTJS\backend>npm install mysql
+6.C:\Users\volem\Desktop\TODOLISTJS\backend>npm install dotenv
+7.C:\Users\volem\Desktop\TODOLISTJS\backend>npm install nodemon --save-dev
+8.C:\Users\volem\Desktop\TODOLISTJS\backend>npm install cors
+9. C:\Users\volem\Desktop\TODOLISTJS\backend>npm install body-parser
+9.1: C:\Users\volem\Desktop\TODOLISTJS\backend>npm i morgan
+10. at file package.json:
+11. create file app.js inside folder backend.
+12. create frontend inside foler TODOLISTJS
+13. create controllers folder inside backend.
+14. create db folder inside backend.
+15. at app.js:
+================app.js===========
+const express = require("express");
+const app = express();
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+//require("dotenv").config(); (not for this stage)
+var cors = require('cors');
+
+
+//MIDDLEWARE
+app.use(morgan('dev'));
+app.use(bodyParser.json({ limit: "5mb" }));
+app.use(bodyParser.urlencoded({
+    limit: "5mb",
+    extended: true
+}));
+app.use(cors());
+
+
+//port
+const port = process.env.PORT || 9000
+
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
+======================================
+16. use cd.. to back the folder terminal
+17. add package.json:
+======================package.json==============below row scripts:
+ "scripts": {
+    "start": "nodemon app.js"
+  },
+
+18. terminal: C:\Users\volem\Desktop\TODOLISTJS\backend>npm start
+see result: Server running on port 9000
+
+20. connect database:
+in folder db, create file: database.js
+
+=========================database.js===================
+const mysql = require("mysql");
+
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: ""
+});
+
+// open the MySQL connection
+db.connect(error => {
+    if (error) throw error;
+    console.log("DB connected");
+});
+
+module.exports = db;
+============================================
+21. in controllers folder create file todoController.js
+======================todoController.js====================
+const db = require("../db/database.js");
+
+
+//CREATE DATABASE
+exports.createDB = (req, res) => {
+    let q = 'CREATE DATABASE todolist';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("DB created");
+    })
+}
+
+//CREATE TABLE
+exports.createTable = (req, res) => {
+    let q = 'CREATE TABLE todolist1(id int AUTO_INCREMENT, firstName VARCHAR(255), lastName VARCHAR(255), PRIMARY KEY(id))';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("TABLE CREATED");
+    });
+}
+=====================================================
+
+22. create routes folder inside backend:
+create file todoRoutes.js insdie folder routes
+==========================todoRoutes.js============
+const express = require('express');
+const { createDB } = require('../controllers/todosController');
+const router = express.Router();
+
+
+//jobs routes
+
+// /api/job/create
+router.get('/create/database', createDB);
+
+
+
+module.exports = router;
+
+===================================================
+23. back to app.js:
+============app.js=============
+const express = require("express");
+const app = express();
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+//require("dotenv").config();
+var cors = require('cors');
+
+===> add a below line codes:>>>>>>
+// import routes
+const todos = require('./routes/todosRoutes');
+
+
+//MIDDLEWARE
+app.use(morgan('dev'));
+app.use(bodyParser.json({ limit: "5mb" }));
+app.use(bodyParser.urlencoded({
+    limit: "5mb",
+    extended: true
+}));
+app.use(cors());
+
+===>add a below line codes:>>>>>>
+
+//ROUTES MIDDLEWARE
+app.use('/api', todos);
+
+
+//port
+const port = process.env.PORT || 9000
+
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
+===================================================
+24. use the postman to test API and create database:
+see link:https://www.google.com.vn/search?q=how+to+open+postman+in+vs+code&sca_esv=e723f428ea636eb3&sxsrf=ACQVn0_cVdmern4qSjO786UQengHwRYHnA%3A1707475820726&ei=bAPGZc7wK5Ks0-kPu-y-2Ag&oq=how+to+open+postman+in&gs_lp=Egxnd3Mtd2l6LXNlcnAiFmhvdyB0byBvcGVuIHBvc3RtYW4gaW4qAggDMgsQABiABBiKBRiRAjIFEAAYgAQyBRAAGIAEMgUQABiABDIFEAAYgAQyBRAAGIAEMgUQABiABDIFEAAYgAQyBhAAGBYYHjIGEAAYFhgeSOMaUIgCWLIFcAF4AZABAJgBgQGgAdYCqgEDMS4yuAEByAEA-AEBwgIKEAAYRxjWBBiwA8ICChAAGIAEGIoFGEPiAwQYACBBiAYBkAYI&sclient=gws-wiz-serp#kpvalbx=_eQPGZceuEb-l2roP6rKj2AQ_28
+- Go to postman and input information as picture postman create db.png below...
+
+===========database.js=============
+const mysql = require("mysql");
+
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "todolist"  >>>>>add todolist here<<<<<<<<<<<<<
+});
+
+// open the MySQL connection
+db.connect(error => {
+    if (error) throw error;
+    console.log("DB connected");
+});
+
+module.exports = db;
+=====================================
+25. use postman to create table inside database:
+==================todoController.js==================
+const db = require("../db/database");
+
+
+//CREATE DATABASE
+exports.createDB = (req, res) => {
+    let q = 'CREATE DATABASE todolist';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("DB created");
+    })
+}
+
+//CREATE TABLE
+exports.createTable = (req, res) => {
+    let q = 'CREATE TABLE todolist1(id int AUTO_INCREMENT, firstName VARCHAR(255), lastName VARCHAR(255), PRIMARY KEY(id))';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("TABLE CREATED");
+    });
+}
+
+//CREATE TABLE <<<<<<<<Below is line code to crete table>>>>>>>>>>>>>>>>
+
+exports.createTable = (req, res) => {
+    let q = 'CREATE TABLE todolist1(id int AUTO_INCREMENT, firstName VARCHAR(255), lastName VARCHAR(255), PRIMARY KEY(id))';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("TABLE CREATED");
+    });
+}
+===========================todoRoutes.js=============================================
+const express = require('express');
+const router = express.Router();
+const { createDB, createTable } = require('../controllers/todoController');
+
+
+
+//jobs routes
+
+// /api/job/create
+router.get('/create/database', createDB);
+
+router.get('/create/table', createTable); =========> add this line
+
+module.exports = router;
+
+========use postman to create table see pic postman create tb below===============
+
+26 Insert data into table:
+===========================todoController.js======================
+const db = require("../db/database");
+
+
+//CREATE DATABASE
+exports.createDB = (req, res) => {
+    let q = 'CREATE DATABASE todolist';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("DB created");
+    })
+}
+
+//CREATE TABLE
+exports.createTable = (req, res) => {
+    let q = 'CREATE TABLE todolist1(id int AUTO_INCREMENT, firstName VARCHAR(255), lastName VARCHAR(255), PRIMARY KEY(id))';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("TABLE CREATED");
+    });
+}
+
+//CREATE DATA: >>>>>below lines is added records to table:<<<<<<
+
+exports.createList = (req, res) => {
+    const q = "INSERT INTO todolist1 SET ?";
+
+    const { firstName, lastName } = req.body;
+
+    db.query(q, { firstName, lastName }, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+}
+===============================todoRoutes.js==========================
+const express = require('express');
+const router = express.Router();
+const { createDB, createTable, createList, showTodos, singleTodo, updateTodo, deleteSingleTodo } = require('../controllers/todoController');
+
+>>>>>>>>>>>>>>add createList above<<<<<<<
+
+
+//jobs routes
+
+// /api/job/create
+
+router.get('/create/database', createDB);
+
+router.get('/create/table', createTable);
+
+router.post('/create/list', createList);  >>>>>>add createList here<<<<<
+
+module.exports = router;
+
+============================Postman to create list==============
+see pic of postman create data.png below.
+
+27. show all todolist:
+=========================todoController.js==================
+const db = require("../db/database");
+
+
+//CREATE DATABASE
+exports.createDB = (req, res) => {
+    let q = 'CREATE DATABASE todolist';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("DB created");
+    })
+}
+
+//CREATE TABLE
+exports.createTable = (req, res) => {
+    let q = 'CREATE TABLE todolist1(id int AUTO_INCREMENT, firstName VARCHAR(255), lastName VARCHAR(255), PRIMARY KEY(id))';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("TABLE CREATED");
+    });
+}
+
+//CREATE DATA:
+exports.createList = (req, res) => {
+    const q = "INSERT INTO todolist1 SET ?";
+
+    const { firstName, lastName } = req.body;
+
+    db.query(q, { firstName, lastName }, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+}
+
+//SHOW TODOS >>>>>>add below code:
+
+exports.showTodos = (req, res) => {
+    const q = "SELECT * FROM todolist1";
+
+    db.query(q, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+};
+======================todoRoutes.js====================
+const express = require('express');
+const router = express.Router();
+const { createDB, createTable, createList, showTodos, singleTodo, updateTodo, deleteSingleTodo } = require('../controllers/todoController');
+
+>>>>>>>>>>>>>>>>>>add "showTodos" above line
+
+
+//jobs routes
+
+// /api/job/create
+
+router.get('/create/database', createDB);
+
+router.get('/create/table', createTable);
+
+router.post('/create/list', createList);
+
+router.get('/show/todos', showTodos); >>>>>>>>>>add this line code to show todolist
+
+module.exports = router;
+
+============Postman to show todolist: see pic postman show todolist.png bellow==================
+
+28. Show a single todolist:
+
+=====================todoController.js================
+const db = require("../db/database");
+
+
+//CREATE DATABASE
+exports.createDB = (req, res) => {
+    let q = 'CREATE DATABASE todolist';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("DB created");
+    })
+}
+
+//CREATE TABLE
+exports.createTable = (req, res) => {
+    let q = 'CREATE TABLE todolist1(id int AUTO_INCREMENT, firstName VARCHAR(255), lastName VARCHAR(255), PRIMARY KEY(id))';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("TABLE CREATED");
+    });
+}
+
+//CREATE DATA:
+exports.createList = (req, res) => {
+    const q = "INSERT INTO todolist1 SET ?";
+
+    const { firstName, lastName } = req.body;
+
+    db.query(q, { firstName, lastName }, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+}
+
+//SHOW TODOS
+
+exports.showTodos = (req, res) => {
+    const q = "SELECT * FROM todolist1";
+
+    db.query(q, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+};
+
+
+//SHOW SINGLE TODO >>>>>show single list code here:
+
+exports.singleTodo = (req, res) => {
+    const q = `SELECT * FROM todolist1 where id=${req.params.id}`;
+
+    db.query(q, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result[0]);
+    });
+}
+=============================todoRoutes.js===========================
+const express = require('express');
+const router = express.Router();
+const { createDB, createTable, createList, showTodos, singleTodo, updateTodo, deleteSingleTodo } = require('../controllers/todoController');
+
+>>>>>>add singleTodo to above line code<<<<<<<
+
+//jobs routes
+
+// /api/job/create
+
+router.get('/create/database', createDB);
+
+router.get('/create/table', createTable);
+
+router.post('/create/list', createList);
+
+router.get('/show/todos', showTodos);
+
+router.get('/todo/:id', singleTodo); >>>>>>>add new line code<<<<<<<<<<<<<<<<<<<<<
+
+module.exports = router;
+
+================use postman to show single list see pic postman show single todolist.png below.
+
+29. Update TODOLIST:
+===============todoControllers.js=========================
+const db = require("../db/database");
+
+
+//CREATE DATABASE
+exports.createDB = (req, res) => {
+    let q = 'CREATE DATABASE todolist';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("DB created");
+    })
+}
+
+//CREATE TABLE
+exports.createTable = (req, res) => {
+    let q = 'CREATE TABLE todolist1(id int AUTO_INCREMENT, firstName VARCHAR(255), lastName VARCHAR(255), PRIMARY KEY(id))';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("TABLE CREATED");
+    });
+}
+
+//CREATE DATA:
+exports.createList = (req, res) => {
+    const q = "INSERT INTO todolist1 SET ?";
+
+    const { firstName, lastName } = req.body;
+
+    db.query(q, { firstName, lastName }, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+}
+
+//SHOW TODOS
+
+exports.showTodos = (req, res) => {
+    const q = "SELECT * FROM todolist1";
+
+    db.query(q, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+};
+
+
+//SHOW SINGLE TODO
+exports.singleTodo = (req, res) => {
+    const q = `SELECT * FROM todolist1 where id=${req.params.id}`;
+
+    db.query(q, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result[0]);
+    });
+}
+
+//UPDATE TODO >>>>>add line code here:
+
+exports.updateTodo = (req, res) => {
+    const { firstName, lastName } = req.body;
+    // const q = `UPDATE todolist1 SET firstName ='${firstName}' lastName ='${lastName}' where id=${req.params.id}`;
+    const q = `UPDATE todolist1 SET ? where id=${req.params.id}`;
+
+    db.query(q, { firstName, lastName }, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+}
+
+===================todoRoutes.js=======================
+const express = require('express');
+const router = express.Router();
+const { createDB, createTable, createList, showTodos, singleTodo, updateTodo, deleteSingleTodo } = require('../controllers/todoController');
+
+>>>>>>>>>>>>>>>>>>>add updateTodo to above line<<<<<<<<<<<
+
+//jobs routes
+
+// /api/job/create
+
+router.get('/create/database', createDB);
+
+router.get('/create/table', createTable);
+
+router.post('/create/list', createList);
+
+router.get('/show/todos', showTodos);
+
+router.get('/todo/:id', singleTodo);
+
+router.put('/update/todo/:id', updateTodo); >>>>>>>>>>>>add a new line code here.
+
+module.exports = router;
+
+===============use the postman to update see pic postman update single list.png below.
+
+30.Delete single todolist:
+=====================todoController.js=======================
+
+const db = require("../db/database");
+
+
+//CREATE DATABASE
+exports.createDB = (req, res) => {
+    let q = 'CREATE DATABASE todolist';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("DB created");
+    })
+}
+
+//CREATE TABLE
+exports.createTable = (req, res) => {
+    let q = 'CREATE TABLE todolist1(id int AUTO_INCREMENT, firstName VARCHAR(255), lastName VARCHAR(255), PRIMARY KEY(id))';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("TABLE CREATED");
+    });
+}
+
+//CREATE DATA:
+exports.createList = (req, res) => {
+    const q = "INSERT INTO todolist1 SET ?";
+
+    const { firstName, lastName } = req.body;
+
+    db.query(q, { firstName, lastName }, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+}
+
+//SHOW TODOS
+
+exports.showTodos = (req, res) => {
+    const q = "SELECT * FROM todolist1";
+
+    db.query(q, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+};
+
+
+//SHOW SINGLE TODO
+exports.singleTodo = (req, res) => {
+    const q = `SELECT * FROM todolist1 where id=${req.params.id}`;
+
+    db.query(q, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result[0]);
+    });
+}
+
+//UPDATE TODO
+exports.updateTodo = (req, res) => {
+    const { firstName, lastName } = req.body;
+    // const q = `UPDATE todolist1 SET firstName ='${firstName}' lastName ='${lastName}' where id=${req.params.id}`;
+    const q = `UPDATE todolist1 SET ? where id=${req.params.id}`;
+
+    db.query(q, { firstName, lastName }, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+}
+
+//DELETE SINGLE TODO   >>>>> add new line code here:
+exports.deleteSingleTodo = (req, res) => {
+
+    const q = `DELETE FROM todolist1  WHERE id=${req.params.id}`;
+
+    db.query(q, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json({ data: "todo deleted" });
+    });
+}
+
+=========================todoRoutes.js=======================
+const express = require('express');
+const router = express.Router();
+const { createDB, createTable, createList, showTodos, singleTodo, updateTodo, deleteSingleTodo } = require('../controllers/todoController');
+
+>>>>>>>>>>>>>add deletesingleTodo to above line<<<<<<<<<<<<<<<<<<<
+
+//jobs routes
+
+// /api/job/create
+
+router.get('/create/database', createDB);
+
+router.get('/create/table', createTable);
+
+router.post('/create/list', createList);
+
+router.get('/show/todos', showTodos);
+
+router.get('/todo/:id', singleTodo);
+
+router.put('/update/todo/:id', updateTodo);
+
+router.delete('/delete/todo/:id', deleteSingleTodo); >>>>add a new line code here.
+
+module.exports = router;
+
+=================postman delete data refer pic postman deletele single list.png below==========
+
+PART2:==============================FRONTEND================================================================
+1. Create API for hompage:
+=========================todoController.js=================
+const db = require("../db/database");
+
+
+//CREATE DATABASE
+exports.createDB = (req, res) => {
+    let q = 'CREATE DATABASE todolist';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("DB created");
+    })
+}
+
+//CREATE TABLE
+exports.createTable = (req, res) => {
+    let q = 'CREATE TABLE todolist1(id int AUTO_INCREMENT, firstName VARCHAR(255), lastName VARCHAR(255), PRIMARY KEY(id))';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("TABLE CREATED");
+    });
+}
+
+//CREATE DATA:
+exports.createList = (req, res) => {
+    const q = "INSERT INTO todolist1 SET ?";
+
+    const { firstName, lastName } = req.body;
+
+    db.query(q, { firstName, lastName }, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+}
+
+//SHOW TODOS
+
+exports.showTodos = (req, res) => {
+    const q = "SELECT * FROM todolist1";
+
+    db.query(q, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+};
+
+
+//SHOW SINGLE TODO
+exports.singleTodo = (req, res) => {
+    const q = `SELECT * FROM todolist1 where id=${req.params.id}`;
+
+    db.query(q, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result[0]);
+    });
+}
+
+//UPDATE TODO
+exports.updateTodo = (req, res) => {
+    const { firstName, lastName } = req.body;
+    // const q = `UPDATE todolist1 SET firstName ='${firstName}' lastName ='${lastName}' where id=${req.params.id}`;
+    const q = `UPDATE todolist1 SET ? where id=${req.params.id}`;
+
+    db.query(q, { firstName, lastName }, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json(result);
+    });
+}
+
+//DELETE SINGLE TODO
+exports.deleteSingleTodo = (req, res) => {
+
+    const q = `DELETE FROM todolist1  WHERE id=${req.params.id}`;
+
+    db.query(q, (err, result) => {
+        if (err) return res.json(err);
+        return res.status(200).json({ data: "todo deleted" });
+    });
+}
+
+//CRETATE HOMEPAGE: >>>>add this line code:
+
+exports.homepage = (req, res)=>{
+    res.json({ msg: "This is my todo list"});
+}
+
+==========================todoRoutes.js======================
+const express = require('express');
+const router = express.Router();
+const { createDB, createTable, createList, showTodos, singleTodo, updateTodo, deleteSingleTodo,homepage } = require('../controllers/todoController');
+
+>>>>>>>>>>>>add homepage to above line<<<<<<<<<<<<<<<<
+
+//jobs routes
+
+// /api/job/create
+
+router.get("/",homepage) >>>>>>>add new line code here
+
+router.get('/create/database', createDB);
+
+router.get('/create/table', createTable);
+
+router.post('/create/list', createList);
+
+router.get('/show/todos', showTodos);
+
+router.get('/todo/:id', singleTodo);
+
+router.put('/update/todo/:id', updateTodo);
+
+router.delete('/delete/todo/:id', deleteSingleTodo);
+
+module.exports = router;
+
+===================check http://localhost:8000/api/=============
+
+2. in folder frontend, create index.html, script.js, style.css (see reference detail of each folder)
+3. SHOW data to html:
+create trial.html in frontend folder:
+========================trial.html==================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>trial</title>
+    <head>Trial</head>
+</head>
+<body>
+    <div>
+    <h2>user</h2>
+    <table id="data" border="border"></table>
+    </div>
+    <br>
+    <h2>Add new user:</h2>
+    <div>
+        <form id="form" method="post">
+            <input type="text", id="firstName" placeholder="First Name"/><br>
+            <input type="text", id="lastName" placeholder="Last Name"/><br>
+            <input type="submit" value="Add"/>
+         </form>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
+=======================FETCH API GET DATA TO HTML TABLE==========================================
+https://codepen.io/RGorman62/embed/OJmoerb?default-tab=js%2Cresult
+
+//fetch API GET to show in Html:
+
+fetch("http://localhost:8000/api//show/todos")
+  .then((response) => response.json())
+  .then((json) =>{
+    let li = `<tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Edit</th>`;
+    json.forEach((user) => {
+      li += `<tr>
+        <td>${user.id}</td>
+        <td>${user.firstName} </td>
+        <td>${user.lastName}</td>
+        <td><button>Edit</button></td>
+      </tr>`;
+    });
+    document.getElementById("data").innerHTML = li;
+})
+refer:
+https://dev.to/collegewap/react-fetch-example-getpostputdelete-with-api-3l00
+
+
+=======================FETCH API POST DATA=================
+//fetch API POST From hmtl:
+
+document.getElementById("form").addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const firstName = document.getElementById("firstName").value;
+  const lastName = document.getElementById("lastName").value;
+
+  const data = {
+    firstName: firstName,
+    lastName: lastName
+  };
+
+  postData("http://localhost:8000/api/create/list", data)
+      .then((response) => {
+          console.log(response);
+      })
+      .catch((error) => {
+          console.error("Error:", error);
+      });
+});
+
+async function postData(url = "", data = {}) {
+  const response = await fetch(url, {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+  });
+
+  return await response.json();
+}
+
+==========================update fetch API=========================
+
+
+
+
+
+
+
+
+
+
