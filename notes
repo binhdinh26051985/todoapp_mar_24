@@ -1,3 +1,24 @@
+REACT: 1. SETUP: https://codeflarelimited.com/blog/create-a-todo-app-with-react-node-js-and-mysql-using-sequelize-and-pagination/
+create folder name TODMIDMARAPP
+VScode terminal check if node arleady install: node:
+PS C:\Users\JINA\Desktop\TODOMIDMARAPP> node -V
+2. Install React:
+PS C:\Users\JINA\Desktop\TODOMIDMARAPP> mkdir marapp
+PS C:\Users\JINA\Desktop\TODOMIDMARAPP> npx create-react-app marapp
+PS C:\Users\JINA\Desktop\TODOMIDMARAPP> cd marapp
+PS C:\Users\JINA\Desktop\TODOMIDMARAPP\marapp npm start
+3. 
+
+=======================================================
+
+
+
+
+
+
+
+
+
 reference: https://www.youtube.com/watch?v=sO0D5g-F2Qg&t=1840s
 1. Create folder TODOLIST
 2. Create folder backend inside TODOLIST
