@@ -30,6 +30,35 @@ import React from 'react';
 
 At terminal:
 PS C:\Users\JINA\Desktop\TODOMIDMARAPP\marapp> npm install react
+=============================================================
+5. Create Tasklist webcontent: in 
+================App.js: ==========
+import logo from './logo.svg';
+import './App.css';
+import TaskList from "./Components/taskList";
+
+function App() {
+  return (
+    <div className="App">
+      <TaskList/>
+    </div>
+  );
+}
+
+export default App;
+================taskList.js=====================
+import React from 'react';
+class TaskList extends React.Component {
+    render() {
+        return (
+            <div>taskList</div>
+        )
+    }
+}
+
+export default TaskList
+
+
 
 
 reference: https://www.youtube.com/watch?v=sO0D5g-F2Qg&t=1840s
