@@ -25,7 +25,7 @@ export default App;
 
 =======================================================
 4. Create folder scr/Components;
-Create file taksList.js
+Create file taskList.js
 
 
 reference: https://www.youtube.com/watch?v=sO0D5g-F2Qg&t=1840s
