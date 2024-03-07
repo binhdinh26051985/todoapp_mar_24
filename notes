@@ -24,6 +24,8 @@ export default App;
 ====> then check http://localhost:3000/
 
 =======================================================
+4. Create folder scr/Components;
+Create file taksList.js
 
 
 reference: https://www.youtube.com/watch?v=sO0D5g-F2Qg&t=1840s
