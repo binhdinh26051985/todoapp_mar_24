@@ -51,7 +51,7 @@ import React from 'react';
 class TaskList extends React.Component {
     render() {
         return (
-            <div>taskList</div>
+            <div>Welcome to new world!</div>
         )
     }
 }
