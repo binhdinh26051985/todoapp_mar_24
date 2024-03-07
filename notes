@@ -25,7 +25,11 @@ export default App;
 
 =======================================================
 4. Create folder scr/Components;
-Create file taskList.js
+Create file taskList.js:
+import React from 'react';
+
+At terminal:
+PS C:\Users\JINA\Desktop\TODOMIDMARAPP\marapp> npm install react
 
 
 reference: https://www.youtube.com/watch?v=sO0D5g-F2Qg&t=1840s
