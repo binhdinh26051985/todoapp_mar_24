@@ -7,7 +7,8 @@ PS C:\Users\JINA\Desktop\TODOMIDMARAPP> mkdir marapp
 PS C:\Users\JINA\Desktop\TODOMIDMARAPP> npx create-react-app marapp
 PS C:\Users\JINA\Desktop\TODOMIDMARAPP> cd marapp
 PS C:\Users\JINA\Desktop\TODOMIDMARAPP\marapp npm start
-3. Scr/app.js:
+3. Scr/app.js: ============================================
+
 import logo from './logo.svg';
 import './App.css';
 
