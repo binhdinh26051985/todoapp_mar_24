@@ -910,7 +910,144 @@ async function postData(url = "", data = {}) {
 }
 
 ==========================update fetch API=========================
+React:
+Ref: https://www.youtube.com/watch?v=npaLIQeH7xw
+PS C:\Users\JINA\Desktop\ReactSQL> npx create-react-app client
+cd to client then command npm start.
 
+==================App.js===============clearn and replace below content:
+
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+     better future!
+    </div>
+  );
+}
+
+export default App;
+=======================================================
+
+Create folder : src/Components
+=> create scr/Components/tasklist.js
+
+=====install react=====terminal:
+PS C:\Users\JINA\Desktop\ReactSQL\client> cd..
+PS C:\Users\JINA\Desktop\ReactSQL> npm install react
+
+==============tasklist.js=========
+
+import React from 'react';
+class TaskList extends React.Component {
+    render() {
+        return (
+            <div>new journey!</div>
+        )
+    }
+}
+
+export default TaskList
+
+==============App.js==============
+
+import React from 'react';
+import './App.css';
+import TaskList from './Components/tasklist';
+
+function App() {
+  return (
+    <div className="App">
+     <TaskList/>
+    </div>
+  );
+}
+
+export default App;
+
+===============public/index.html===========clean & keep below content only=====
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ReactSQL</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
+
+================change tasklist content===============
+import React from 'react';
+class TaskList extends React.Component {
+    state = {
+        task : ""
+    }
+    render() {
+        return (
+            <div>
+                <div>TODOLIST</div>
+                <input value={this.state.task} onChange={ e => this.setState({
+                    task: e.target.value
+                })} placeholder="what todo?"></input>
+                <button> Submit</button>          
+            </div>
+        )
+    }
+}
+
+export default TaskList
+=================CHAPTER 2 ===========================================
+
+================change page into card form======================================
+google page: sematic ui
+select: https://semantic-ui.com/views/card.html
+
+=======================tasklist.js=========================
+
+import React from 'react';
+class TaskList extends React.Component {
+    state = {
+        task : ""
+    }
+
+    onDeleteClick = () => {
+        console.log('inside delete')
+    }
+    render() {
+        return (
+            <div>
+                <h3>TODOLIST</h3>
+                <input value={this.state.task} onChange={e => this.setState({
+                    task: e.target.value
+                })} placeholder="what todo?"/>
+                <button> Submit</button>
+                <hr/>
+                <div className="ui cards">
+                    <div className="card">
+                        <div className="content">
+                                <div className="meta">
+                                    Friends of Veronika
+                                </div>
+                        </div>
+
+                        <div className="extra content">
+                                <div className="ui two buttons">
+                                    <button>Done</button>
+                                    <button onClick={
+                                        () => this.onDeleteClick()
+                                    }>Delete</button>
+                                </div>
+                        </div>
+                    </div>  
+                </div>      
+            </div>
+        )
+    }
+}
+
+export default TaskList
 
 
 
