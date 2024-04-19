@@ -1051,7 +1051,325 @@ export default TaskList
 
 =========================================REACT FRONTEND====================
 
+client/scr/app.js
+client/scr/index.js: ============index.js=============
 
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+==========================client/scr/App.css======== delete all
+====================client/public/index.html===========
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ReactSQL</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    
+  </body>
+</html>
+
+=========================create scr/components folder=============
+===> create file scr/components/header.js==============
+
+import React from 'react';
+
+class Header extends React.Component {
+    
+    render() {
+        return (
+            <div>
+                <h3>TODOLIST</h3>
+                
+            </div>
+            
+        )
+    }
+}
+
+export default Header
+
+======================src/App.js============
+
+import React from 'react';
+import './App.css';
+//import TaskList from './Components/tasklist';
+import Header from './Components/header';
+
+const  App = () => {
+  
+  return (
+    <div className="App">
+     <Header/>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"/>
+                <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+
+                <div class="container mt-5 p-3 bg-secondary">
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="text-center">Add user</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="">Enter name</label>
+                                    <input type="text" class="form-control" id="firstName" placeholder="Enter Name"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Enter Last Name:</label>
+                                    <input type="text" name="" class="form-control" id="lastName" placeholder="Last name" />
+                                </div>
+                
+                                <div class="mt-3">
+                                    <button class="btn btn-primary float-right" onclick="submitForm()">Create</button>
+                                    <br/>
+                                    <button class="btn btn-primary float-right" onclick="EditForm()">Change</button>
+                                </div>
+                                <div class="w-100">
+                                    <span id="message" class="text-success"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+     
+                    <div class="col-md-8">
+                        <table class="table table-bordered text-white text-center">
+                            <thead>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Last Name</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                            </thead>
+                            <tbody id="tbData">
+                            
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+    </div>
+  );
+}
+
+export default App;
+
+==============Run 2 terminal on the same time: server: npm start, client: npm start================
+=====================client/package.json===============
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.6.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "proxy": "http://localhost:5000"   ///add this line code here
+}
+
+=============================Edit App.js=====================
+
+import { useEffect, useState } from 'react';
+import './App.css';
+import Header from './Components/header';
+import axios from 'axios';
+
+const App = () => {
+  const [editMode, setEditMode] = useState(false);
+  const [list, setList] = useState([]);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [userId, setUserId] = useState('');
+
+
+  const showTodos = async () => {
+    try {
+      const { data } = await axios.get('/api/show/todos');
+      setList(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // add todo
+  const addtodo = async (e) => {
+    e.preventDefault();
+    try {
+      const add = await axios.post('/api/create/list', { firstName, lastName });
+      if (add.status === 200) {
+        setFirstName('');
+        setLastName('');
+        showTodos();
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // delete single todo
+  const deleteTodo = async (id) => {
+
+    try {
+      const todoDelete = await axios.delete(`/api/delete/todo/${id}`);
+      if (todoDelete.status === 200) {
+        showTodos();
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  // populate single todo in the form
+  const showSingleTodo = async (id) => {
+    setEditMode(true);
+
+    try {
+      const { data } = await axios.get(`/api/todo/${id}`);
+      setFirstName(data.firstName);
+      setLastName(data.lastName);
+      setUserId(data.id);
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //edit todo
+  const editTodo = async (e) => {
+    e.preventDefault()
+
+    try {
+      const edit = await axios.put(`/api/update/todo/${userId}`, { firstName, lastName });
+      // console.log(edit)
+
+      if (edit.status === 200) {
+        setEditMode(false);
+        setFirstName('');
+        setLastName('');
+        showTodos();
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+
+
+  useEffect(() => {
+    showTodos();
+  }, []);
+
+  return (
+    <>
+      <Header/>
+      <div className="container">
+        <div className="form" style={{ paddingBottom: "50px", paddingTop: "50px" }}>
+          <form onSubmit={editMode ? editTodo : addtodo}>
+            <div className="form-wrapper" style={{ display: "flex", justifyContent: "space-between" }}>
+              <div style={{ flex: 1, marginRight: "10px" }}>
+                <input onChange={(e) => setFirstName(e.target.value)} value={firstName} className="form-control" type="text" placeholder="first name" name="firstName"></input>
+              </div>
+              <div style={{ flex: 1 }}>
+                <input onChange={(e) => setLastName(e.target.value)} value={lastName} className="form-control" type="text" placeholder="last name" name="lastName"></input>
+              </div>
+              
+                { 
+                    editMode ?
+                  <button type='submit' style={{ width: "200px", marginLeft: "10px" }} className='btn btn-primary'>Edit</button>
+                    :
+                  <button type='submit' style={{ width: "200px", marginLeft: "10px" }} className='btn btn-success'>+ Add</button>
+                }
+
+            </div>
+          </form>
+        </div>
+
+        <table className="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">First name</th>
+              <th scope="col">Last name</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              list && list.map(d => (
+                <tr key={d.id} >
+                  <th scope="row">{d.id}</th>
+                  <td>{d.firstName}</td>
+                  <td>{d.lastName}</td>
+                  <td>
+                    <i onClick={() => showSingleTodo(d.id)} className="fa-solid fa-pen-to-square" style={{ color: "green", cursor: "pointer", marginRight: "25px" }} ></i>
+                    <i onClick={() => deleteTodo(d.id)} style={{ color: "red", cursor: "pointer" }} className="fa-solid fa-trash-can"></i>
+                  </td>
+
+                </tr>
+
+              ))
+            }
+
+          </tbody>
+        </table>
+      </div>
+    </>
+  )
+}
+
+export default App
+
+===================================================================
 
 
 
