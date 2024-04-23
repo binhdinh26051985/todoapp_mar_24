@@ -1369,9 +1369,42 @@ const App = () => {
 
 export default App
 
-===================================================================
+======================CREATE NEW DATABASE=============================================
+=> Step1: at Server/controllers/todoController.js:
+
+exports.createTable2 = (req, res) => {
+    let q = 'CREATE TABLE samptrackin(id int AUTO_INCREMENT, style VARCHAR(255), description VARCHAR(255), sketch BLOB, sampleroom VARCHAR(255), division VARCHAR(255), season VARCHAR(255), remark VARCHAR(1000), PRIMARY KEY(id))';
+    db.query(q, (err, result) => {
+        if (err) throw err;
+        return res.status(201).json("TABLE2 CREATED");
+    });
+}
+=> Step2: at Server/routes/todoRoutes.js:
+============================Step2==============
+const express = require('express');
+const router = express.Router();
+const { createDB,createDB2,createTable,createTable2,createList,showTodos,singleTodo,updateTodo,deleteSingleTodo, homepage } = require('../controllers/todoController');
 
 
+//jobs routes
+// /api/job/create
+router.get('/create/database', createDB);
+router.get('/create/database2', createDB2);
+router.get('/create/table', createTable);
+router.get('/create/table2', createTable2);
+router.get('/todolist', showTodos);
+router.get('/todo/:id', singleTodo);
+
+router.post('/create/list', createList);
+router.put('/update/todo/:id', updateTodo);
+router.delete('/delete/todo/:id', deleteSingleTodo);
+
+
+router.get("/",homepage);
+
+
+module.exports = router;
+======================================================
 
 
 
