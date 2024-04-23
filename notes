@@ -1369,8 +1369,12 @@ const App = () => {
 
 export default App
 
-======================CREATE NEW DATABASE=============================================
+======================CREATE NEW DATABASE; CRETATE NEW TABLE=============================================
+
+
 => Step1: at Server/controllers/todoController.js:
+
+NEW DATABASE:
 
 exports.createTable2 = (req, res) => {
     let q = 'CREATE TABLE samptrackin(id int AUTO_INCREMENT, style VARCHAR(255), description VARCHAR(255), sketch BLOB, sampleroom VARCHAR(255), division VARCHAR(255), season VARCHAR(255), remark VARCHAR(1000), PRIMARY KEY(id))';
@@ -1379,6 +1383,8 @@ exports.createTable2 = (req, res) => {
         return res.status(201).json("TABLE2 CREATED");
     });
 }
+NEW TABLE:
+
 => Step2: at Server/routes/todoRoutes.js:
 ============================Step2==============
 const express = require('express');
