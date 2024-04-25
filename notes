@@ -1421,7 +1421,7 @@ module.exports = router;
 
 =NEW STAGE:=====================UPLOAD IMAGE TO  SQL DATA ================================
 PS C:\Users\JINA\Desktop\ReactSQL\server> npm install multer 
-
+PS C:\Users\JINA\Desktop\ReactSQL\server> npm install sequelize
 
 
 
