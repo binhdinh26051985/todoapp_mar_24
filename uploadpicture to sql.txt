@@ -1,0 +1,288 @@
+create folder blogapp: Refer https://www.youtube.com/watch?v=dLXSJdTK9QI&t=1185s
+
+===========================react frontend app======================
+
+create react app: frontend:
+terminal command:
+- PS C:\Users\JINA\Desktop\blogapp> npx create-react-app frontend
+- PS C:\Users\JINA\Desktop\blogapp> cd frontend
+- npm start
+==> will see react page at : http://localhost:3000/
+PS C:\Users\JINA\Desktop\blogapp\frontend> npm install axios
+================server folder======================================
+
+PS C:\Users\JINA\Desktop\blogapp> cd server
+PS C:\Users\JINA\Desktop\blogapp\server> npm init -y
+PS C:\Users\JINA\Desktop\blogapp\server> npm install express mysql cors nodemon multer path
+
+create file ================server/server.js===============
+
+=======================frontend==================================
+create file ====================src/FileUpload.js ===============
+
+==================src/App.js================
+import React from 'react'
+import FileUpload from './FileUpload'
+//import logo from './logo.svg';
+//import './App.css';
+
+function App() {
+  return (
+    <FileUpload/>
+  );
+}
+
+export default App;
+
+======================src/FileUpload.js====================
+
+import React , { useState } from 'react'
+
+function FileUpload() {
+    const [file, setFile] = useState();
+    
+    const handleFile = (e) => {
+        setFile(e.target.files[0])
+    }
+
+    const handleUpload = () =>{
+        
+    }
+
+
+    return (
+        <div className='container'> 
+            <input type='file' onChange={handleFile}/>
+            <button onClick={handleUpload}> Upload</button>
+        </div>
+    )
+}
+
+export default FileUpload 
+=============================server/package.json================
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",  >>>>>>>>>>>>>ADD THIS LINE CODE<<<<<<<<<<<<<<<<
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"  >>>>>>>>>>>>>ADD THIS LINE CODE<<<<<<<<<<<<<<<<
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^0.7.0",
+    "mysql": "^2.18.1",
+    "nodemon": "^3.1.0",
+    "path": "^0.12.7"
+  }
+}
+
+==============================server/server.js======================
+PS C:\Users\JINA\Desktop\blogapp\server> npm install bcrypt cookie-parser express-session jsonwebtoken
+
+import express from 'express'
+import mysql from 'mysql'
+import cors from 'cors'
+import multer from 'multer'
+import path from 'path'
+
+
+const app = express()
+app.use(express.json());
+app.use(cors());
+
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: 'signup'
+})
+
+app.listen(8081, ()=>{
+    console.log('Running');
+})
+=================create folder server/public/images===========
+==================server/server.js====================
+import express from 'express'
+import mysql from 'mysql'
+import cors from 'cors'
+import multer from 'multer'
+import path from 'path'
+
+
+const app = express()
+app.use(express.json());
+app.use(cors());
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) =>{
+        cb(null, 'public/images')
+    },
+    filename: (req, file, cb)=>{
+        cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname));
+    }
+})
+
+const upload = multer({
+    storage: storage
+})
+
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: 'signup'
+})
+
+
+app.post ('/upload', upload.single('image'), (req, res) => {
+    console.log(req.file);
+})
+
+
+app.listen(8081, ()=>{
+    console.log('Running');
+})
+=====================================src/FileUpload.js======================
+import React , { useState } from 'react'
+import axios from 'axios'
+
+function FileUpload() {
+    const [file, setFile] = useState();
+    
+    const handleFile = (e) => {
+        setFile(e.target.files[0])
+    }
+
+    const handleUpload = () =>{
+        const formdata = new FormData();
+        formdata.append('image', file);
+        axios.post('http://localhost:8081/upload', formdata)
+        .then(res => console.log(res))
+        .catch(err => console.log(err));
+    }
+
+    return (
+        <div className="container"> 
+            <input type="file" onChange={handleFile}/>
+            <button onClick={handleUpload}> Upload</button>
+        </div>
+    )
+}
+
+export default FileUpload   
+
+===================http://localhost:3000/=========
+test upload image and will see impage file arleady upload to folder server/public/images
+===================add image to database================
+Step1: server/server.js=====
+import express from 'express'
+import mysql from 'mysql'
+import cors from 'cors'
+import multer from 'multer'
+import path from 'path'
+
+
+const app = express()
+app.use(express.json());
+app.use(cors());
+app.use(express.static('public'))
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) =>{
+        cb(null, 'public/images')
+    },
+    filename: (req, file, cb)=>{
+        cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname));
+    }
+})
+
+const upload = multer({
+    storage: storage
+})
+
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: 'signup'
+})
+
+
+app.post ('/upload', upload.single('image'), (req, res) => {
+    //console.log(req.file);
+    const image = req.file.filename;
+    const sql = "UPDATE users SET image = ?";
+    db.query(sql, [image], (err, result )=>{
+        if(err) return res.json({Message:"Error"});
+        return res.json({Status: "Success"});
+    })
+})
+
+app.get('/', (req, res) =>{
+    const sql = 'SELECT * FROM users';
+    db.query(sql, (err, result)=>{
+        if(err) res.json('Error');
+        return res.json(result);
+    })
+})
+
+app.listen(8081, ()=>{
+    console.log('Running');
+})
+
+=====Step2: src/FileUpload.js===========================
+import React , { useState, useEffect } from 'react'
+import axios from 'axios'
+
+function FileUpload() {
+    const [file, setFile] = useState();
+    const [data, setData] = useState([])
+    
+    const handleFile = (e) => {
+        setFile(e.target.files[0])
+    }
+
+    useEffect(()=>{
+        axios.get('http://localhost:8081/')
+        .then(res => {
+            setData(res.data[0])
+        })
+        .catch(err => console.log(err));
+    }, [])
+
+    const handleUpload = () =>{
+        const formdata = new FormData();
+        formdata.append('image', file);
+        axios.post('http://localhost:8081/upload', formdata)
+        .then(res => {
+            if(res.data.Status === "Success") {
+                console.log("Succeeded")
+            } else{
+                console.log("Failed")
+            }
+        })
+        .catch(err => console.log(err));
+    }
+
+    return (
+        <div className="container"> 
+            <input type="file" onChange={handleFile}/>
+            <button onClick={handleUpload}> Upload</button>
+
+            <br/>
+            <img src={'http://localhost:8081/images/' + data.image} alt="" style={{width:"500px", height:"450px"}}/>
+        </div>
+    )
+}
+
+export default FileUpload 
+
+
+
